@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
+use Yajra\DataTables\DataTables;
 
 class CategoryController extends Controller
 {
@@ -14,17 +15,30 @@ class CategoryController extends Controller
     public function index()
     {
         if (request()->ajax()) {
-            $data = Category::select('*');
-            return Datatables::of($data)
+            $data = Category::query();
+            
+            return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('action', function($row){
-                    $btn = '<a href="javascript:void(0)" data-toggle="modal" data-target="#editCategoryModal" data-id="'.$row->id.'" class="edit-category btn btn-sm btn-primary">Edit</a>';
-                    $btn = $btn.' <a href="javascript:void(0)" data-toggle="modal" data-target="#deleteCategoryModal" data-id="'.$row->id.'" class="delete-category btn btn-sm btn-danger">Delete</a>';
-                    return $btn;
+                ->addColumn('action', function($row) {
+                    $actionBtn = '<div class="btn-group">
+                        <a href="' . route('dashboard.categories.edit', $row->id) . '" class="btn btn-sm btn-primary">Edit</a>
+                        <button type="button" class="btn btn-sm btn-danger delete-category" data-id="' . $row->id . '">Delete</button>
+                    </div>';
+                    return $actionBtn;
                 })
-                ->rawColumns(['action', 'status'])
+                ->addColumn('image', function($row) {
+                    if ($row->image) {
+                        return '<img src="' . asset($row->image) . '" alt="Category Image" style="max-height: 50px;">';
+                    }
+                    return '<span class="text-muted">No Image</span>';
+                })
+                ->addColumn('status', function($row) {
+                    return ucfirst($row->status);
+                })
+                ->rawColumns(['action', 'image'])
                 ->make(true);
         }
+        
         return view('categories.index');
     }
 

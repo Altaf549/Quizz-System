@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Category extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'name',
         'status',
@@ -15,9 +17,4 @@ class Category extends Model
     protected $casts = [
         'status' => 'string'
     ];
-
-    public function quizzes()
-    {
-        return $this->hasMany(Quiz::class);
-    }
 }

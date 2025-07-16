@@ -276,7 +276,7 @@ $(document).ready(function() {
     let table = $('#categoriesTable').DataTable({
         processing: true,
         serverSide: true,
-        ajax: '{{ route('dashboard.categories.index') }}',
+        ajax: "{{ route('dashboard.categories.index') }}",
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
             { data: 'name', name: 'name' },
@@ -285,9 +285,9 @@ $(document).ready(function() {
                 name: 'image',
                 render: function(data) {
                     if (data) {
-                        return '<img src="' + data + '" alt="Category Image" style="max-width: 50px; max-height: 50px;">';
+                        return '<img src="' + data + '" alt="Image" style="max-height: 50px;">';
                     }
-                    return 'No Image';
+                    return 'No image';
                 },
                 orderable: false,
                 searchable: false
@@ -299,24 +299,24 @@ $(document).ready(function() {
                     return data ? data.charAt(0).toUpperCase() + data.slice(1) : 'N/A';
                 }
             },
-            { 
-                data: 'created_at', 
+            {
+                data: 'created_at',
                 name: 'created_at',
                 render: function(data) {
                     return moment(data).format('DD MMM YYYY, HH:mm');
                 }
             },
-            { 
-                data: 'id', 
+            {
+                data: 'id',
                 name: 'id',
-                render: function(data, type, row) {
-                    return '<a href="' + '{{ route('dashboard.categories.show', ['category' => ':id']) }}'.replace(':id', data) + '" class="btn btn-sm btn-info">View</a>';
+                render: function(data) {
+                    return '<a href="/dashboard/categories/' + data + '" class="btn btn-sm btn-info">View</a>';
                 },
                 orderable: false,
                 searchable: false
             },
-            { 
-                data: 'action', 
+            {
+                data: 'action',
                 name: 'action',
                 orderable: false,
                 searchable: false
