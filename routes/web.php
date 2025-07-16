@@ -14,4 +14,19 @@ Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logou
 // Protected Routes
 Route::middleware(['auth:staff'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+
+    // Categories Routes
+    Route::resource('categories', App\Http\Controllers\CategoryController::class);
+
+    // Quizzes Routes
+    Route::resource('quizzes', App\Http\Controllers\QuizController::class);
+
+    // Questions Routes
+    Route::resource('questions', App\Http\Controllers\QuestionController::class);
+
+    // Users Routes
+    Route::resource('users', App\Http\Controllers\UserController::class);
+
+    // Results Routes
+    Route::resource('results', App\Http\Controllers\ResultController::class);
 });

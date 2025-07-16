@@ -234,9 +234,12 @@
     </style>
 </head>
 <body>
-    <div id="app">
-        <main class="py-5 mt-5">
-            <div class="container">
+    <div id="app" class="d-flex">
+        <div class="flex-shrink-0">
+            @include('layouts.sidebar')
+        </div>
+        <main class="flex-grow-1 py-5">
+            <div class="container-fluid px-4">
                 @if(session('status'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('status') }}
