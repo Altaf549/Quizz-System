@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Category;
 
 class CategoryController extends Controller
 {
@@ -40,15 +41,42 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'status' => 'required|in:active,inactive'
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            ]);
 
-        Category::create($validated);
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('images/categories'), $imageName);
+                $validated['image'] = 'images/categories/' . $imageName;
+            }
 
-        return redirect()->route('dashboard.categories.index')
-            ->with('success', 'Category created successfully.');
+            $category = Category::create($validated);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Category created successfully.',
+                    'data' => $category
+                ]);
+            }
+
+            return redirect()->route('dashboard.categories.index')
+                ->with('success', 'Category created successfully.');
+
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error creating category: ' . $e->getMessage()
+                ], 422);
+            }
+
+            return back()->with('error', 'Error creating category')->withInput();
+        }
     }
 
     /**
@@ -74,10 +102,27 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'status' => 'required|in:active,inactive'
+            'status' => 'required|in:active,inactive',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $category = Category::findOrFail($id);
+
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($category->image) {
+                $oldImagePath = public_path($category->image);
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
+
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images/categories'), $imageName);
+            $validated['image'] = 'images/categories/' . $imageName;
+        }
+
         $category->update($validated);
 
         return redirect()->route('dashboard.categories.index')

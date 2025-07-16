@@ -8,7 +8,8 @@ class Category extends Model
 {
     protected $fillable = [
         'name',
-        'status'
+        'status',
+        'image'
     ];
 
     protected $casts = [

@@ -10,18 +10,18 @@ class Staff extends Authenticatable
     protected $primaryKey = 'id';
     protected $guard = 'staff';  
     protected $fillable = [
-        'staff_name',  
-        'staff_email', 
-        'staff_password', 
+        'name',
+        'email',
+        'password',
     ];
 
     protected $hidden = [
-        'staff_password', 
+        'password',
         'remember_token',
     ];
 
     public function getAuthPassword()
     {
-        return $this->staff_password; 
+        return $this->password;
     }
 }
