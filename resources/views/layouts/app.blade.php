@@ -192,8 +192,51 @@
             font-family: 'Inter', sans-serif;
             background-color: #f8f9fa;
             min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #app {
             display: flex;
-            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+        }
+        
+        .main-content {
+            flex: 1;
+            width: 100%;
+            padding: 2rem;
+            padding-left: 0;
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .table-responsive {
+            margin-bottom: 2rem;
+        }
+        .login-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        .login-card-header {
+            background: #ff6b6b;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: white;
+        }
+        .login-card-body {
+            padding: 2rem;
         }
         .navbar {
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -235,18 +278,19 @@
 </head>
 <body>
     <div id="app" class="d-flex">
-        <div class="flex-shrink-0">
-            @include('layouts.sidebar')
-        </div>
-        <main class="flex-grow-1 py-5">
-            <div class="container-fluid px-4">
-                @if(session('status'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('status') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-                
+        <!-- Sidebar -->
+        <aside class="sidebar-container bg-white shadow-sm" style="width: 250px; min-height: 100vh;">
+            <div class="sidebar-header py-3 px-4">
+                <h4 class="mb-0">Quiz Management</h4>
+            </div>
+            <nav class="sidebar-nav">
+                @include('layouts.sidebar')
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-grow-1 ms-3" style="min-height: 100vh;">
+            <div class="container-fluid py-4">
                 @yield('content')
             </div>
         </main>
