@@ -71,35 +71,36 @@
 
 
 <!-- Edit Category Modal -->
-<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-info text-white">
-                <h5 class="modal-title fw-bold fs-4" id="editCategoryModalLabel">Edit Category</h5>
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered custom-modal-width">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-semibold fs-4" id="editCategoryModalLabel">Edit Category</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editCategoryForm" method="POST">
+            <form id="editCategoryForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="modal-body p-4">
                     <input type="hidden" id="edit_id" name="id">
-                    <div class="mb-4">
-                        <label for="edit_name" class="form-label fw-bold fs-5">Category Name</label>
-                        <input type="text" class="form-control form-control-lg" id="edit_name" name="name" required placeholder="Enter category name">
+                    <div class="mb-3">
+                        <label for="edit_name" class="form-label fw-semibold fs-6">Category Name</label>
+                        <input type="text" class="form-control" id="edit_name" name="name" required placeholder="Enter category name">
                     </div>
-                    <div class="mb-4">
-                        <label for="edit_status" class="form-label fw-bold fs-5">Status</label>
-                        <select class="form-control form-control-lg" id="edit_status" name="status">
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
+
+                    <div class="mb-3">
+                        <label for="edit_image" class="form-label fw-semibold fs-6">Category Image (Optional)</label>
+                        <div class="mb-3 d-flex align-items-center gap-3 flex-wrap">
+                            <img id="editImagePreview" class="rounded border border-2" style="width: 120px; height: 120px; object-fit: cover; display: none;">
+                            <div class="flex-grow-1">
+                                <input type="file" class="form-control" id="edit_image" name="image" accept="image/*">
+                                <small class="text-muted d-block mt-2">Supported: jpg, jpeg, png, gif. Max size: 2MB</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <div class="w-100 d-flex justify-content-end">
-                        <button type="button" class="btn btn-secondary btn-lg px-5">Cancel</button>
-                        <button type="submit" class="btn btn-info btn-lg px-5">Update Category</button>
-                    </div>
+                <div class="modal-footer border-top-0 px-4 pb-4 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary" style="width: 200px;">Update</button>
                 </div>
             </form>
         </div>
@@ -162,6 +163,22 @@
 $(document).ready(function() {
     // Initialize modals only once
     const addCategoryModal = new bootstrap.Modal(document.getElementById('addCategoryModal'));
+    const editCategoryModal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
+
+    // Edit category button click handler
+    $(document).on('click', '.edit-category', function() {
+        let id = $(this).data('id');
+        $.ajax({
+            url: '{{ route('dashboard.categories.show', ['category' => ':id']) }}'.replace(':id', id),
+            method: 'GET',
+            success: function(response) {
+                $('#edit_id').val(response.id);
+                $('#edit_name').val(response.name);
+                $('#edit_status').val(response.status);
+                editCategoryModal.show();
+            }
+        });
+    });
     
     // Image preview functionality
     $('#image').on('change', function() {
@@ -280,6 +297,15 @@ $(document).ready(function() {
                 $('#edit_id').val(response.id);
                 $('#edit_name').val(response.name);
                 $('#edit_status').val(response.status);
+                
+                // Show old image if exists
+                if (response.image) {
+                    // Prepend base URL to image path
+                    let imageUrl = '{{ url('/') }}/' + response.image;
+                    $('#editImagePreview').attr('src', imageUrl);
+                    $('#editImagePreview').show();
+                }
+                
                 $('#editCategoryModal').modal('show');
             }
         });
@@ -296,8 +322,33 @@ $(document).ready(function() {
     $('#editCategoryForm').on('submit', function(e) {
         e.preventDefault();
         let id = $('#edit_id').val();
-        $(this).attr('action', '{{ route('dashboard.categories.update', ['category' => ':id']) }}'.replace(':id', id));
-        this.submit();
+        let formData = new FormData(this);
+
+        $.ajax({
+            url: '{{ route('dashboard.categories.update', ['category' => ':id']) }}'.replace(':id', id),
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    $('#editCategoryModal').modal('hide');
+                    $('#categoriesTable').DataTable().ajax.reload();
+                    toastr.success(response.message);
+                } else {
+                    toastr.error('Failed to update category');
+                }
+            },
+            error: function(xhr) {
+                let errors = xhr.responseJSON?.errors;
+                if (errors) {
+                    let errorMessages = Object.values(errors).flat();
+                    toastr.error(errorMessages.join('<br>'));
+                } else {
+                    toastr.error('An error occurred while updating the category');
+                }
+            }
+        });
     });
 });
 </script>

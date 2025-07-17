@@ -21,9 +21,9 @@ class CategoryController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function($row) {
                     $actionBtn = '<div class="btn-group">
-                        <a href="' . route('dashboard.categories.edit', $row->id) . '" class="btn btn-sm">
+                        <button type="button" class="btn btn-sm edit-category" data-id="' . $row->id . '">
                             <i class="fas fa-edit fa-lg text-warning"></i>
-                        </a>
+                        </button>
                         <button type="button" class="btn btn-sm delete-category" data-id="' . $row->id . '">
                             <i class="fas fa-trash fa-lg text-danger"></i>
                         </button>
@@ -118,33 +118,52 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'status' => 'required|in:active,inactive',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            ]);
 
-        $category = Category::findOrFail($id);
+            $category = Category::findOrFail($id);
 
-        if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($category->image) {
-                $oldImagePath = public_path($category->image);
-                if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath);
+            if ($request->hasFile('image')) {
+                // Delete old image if exists
+                if ($category->image) {
+                    $oldImagePath = public_path($category->image);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
                 }
+
+                $image = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('images/categories'), $imageName);
+                $validated['image'] = 'images/categories/' . $imageName;
             }
 
-            $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('images/categories'), $imageName);
-            $validated['image'] = 'images/categories/' . $imageName;
+            $category->update($validated);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Category updated successfully.',
+                    'data' => $category
+                ]);
+            }
+
+            return redirect()->route('dashboard.categories.index')
+                ->with('success', 'Category updated successfully.');
+
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error updating category: ' . $e->getMessage()
+                ], 422);
+            }
+
+            return back()->with('error', 'Error updating category')->withInput();
         }
-
-        $category->update($validated);
-
-        return redirect()->route('dashboard.categories.index')
-            ->with('success', 'Category updated successfully.');
     }
 
     /**
