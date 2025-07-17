@@ -156,6 +156,17 @@
         width: 250px;
         margin-left: 0.5rem;
     }
+
+    /* Custom switch colors */
+    .form-check-input.status-toggle:checked {
+        background-color: #28a745 !important;
+        border-color: #28a745 !important;
+    }
+    
+    .form-check-input.status-toggle {
+        background-color: #dc3545 !important;
+        border-color: #dc3545 !important;
+    }
 </style>
 @endpush
 @push('scripts')
@@ -284,10 +295,76 @@ $(document).ready(function() {
         ]
     });
 
-    $(document).on('click', '.status-toggle', function() {
-        const id = $(this).data('id');
-        const status = $(this).data('status');
-        // Your AJAX call to toggle the status
+    $(document).on('change', '.status-toggle', function(e) {
+        e.preventDefault(); // Prevent default checkbox behavior
+        
+        const input = $(this);
+        const id = input.data('id');
+        const currentStatus = input.data('status');
+        
+        // Show loading state
+        input.prop('disabled', true);
+        
+        // Get CSRF token
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+        if (!csrfToken) {
+            toastr.error('CSRF token not found');
+            input.prop('disabled', false);
+            return;
+        }
+        
+        // Build the AJAX request
+        const requestData = {
+            _token: csrfToken,
+            _method: 'POST'
+        };
+        
+        $.ajax({
+            url: '{{ route('dashboard.categories.toggleStatus', ['category' => ':id']) }}'.replace(':id', id),
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            data: requestData,
+            success: function(response) {
+                if (response.success) {
+                    // Update the input's status
+                    const newStatus = response.status;
+                    input.data('status', newStatus);
+                    
+                    // Update switch color
+                    const statusClass = newStatus === 'active' ? 'text-success' : 'text-danger';
+                    input.removeClass('text-success text-danger').addClass(statusClass);
+                    
+                    // Refresh the DataTable
+                    $('#categoriesTable').DataTable().ajax.reload();
+                    
+                    toastr.success('Status updated successfully');
+                } else {
+                    // Revert the checkbox state if update fails
+                    input.prop('checked', !input.prop('checked'));
+                    toastr.error(response.message || 'Failed to update status');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                console.error('Response:', xhr.responseJSON);
+                
+                // Revert the checkbox state on error
+                input.prop('checked', !input.prop('checked'));
+                
+                let errorMessage = 'Failed to update status. Please try again.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                
+                toastr.error(errorMessage);
+            },
+            complete: function() {
+                // Reset disabled state
+                input.prop('disabled', false);
+            }
+        });
     });
 
     // Edit category

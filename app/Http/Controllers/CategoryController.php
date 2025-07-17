@@ -37,19 +37,18 @@ class CategoryController extends Controller
                     return '<span class="text-muted">No Image</span>';
                 })
                 ->addColumn('status', function($row) {
-                    $iconClass = $row->status === 'active'
-                        ? 'fa-toggle-on text-success'
-                        : 'fa-toggle-off text-secondary';
-                
+                    $checked = $row->status === 'active' ? 'checked' : '';
+                    $statusClass = $row->status === 'active' ? 'text-success' : 'text-danger';
+                    
                     return '
-                        <button 
-                            type="button" 
-                            class="status-toggle" 
-                            data-id="' . $row->id . '" 
-                            data-status="' . $row->status . '" 
-                            style="border: none; background: transparent;">
-                            <i class="fas ' . $iconClass . '" style="font-size: 2rem;"></i>
-                        </button>';
+                        <div class="form-check form-switch">
+                            <input class="form-check-input status-toggle" 
+                                   type="checkbox" 
+                                   id="status_' . $row->id . '" 
+                                   data-id="' . $row->id . '" 
+                                   data-status="' . $row->status . '" 
+                                   ' . $checked . '>
+                        </div>';
                 })
                 ->rawColumns(['action', 'image', 'status'])
                 ->make(true);
@@ -118,11 +117,26 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Toggle the status of the specified resource.
      */
-    public function edit(string $id)
+    public function toggleStatus(Request $request, string $id)
     {
-        //
+        try {
+            $category = Category::findOrFail($id);
+            $category->status = $category->status === 'active' ? 'inactive' : 'active';
+            $category->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status updated successfully',
+                'status' => $category->status
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update status: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
