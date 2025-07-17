@@ -266,10 +266,7 @@ $(document).ready(function() {
             },
             {
                 data: 'status',
-                name: 'status',
-                render: function(data) {
-                    return data ? data.charAt(0).toUpperCase() + data.slice(1) : 'N/A';
-                }
+                name: 'status'
             },
             {
                 data: 'created_at',
@@ -285,6 +282,12 @@ $(document).ready(function() {
                 searchable: false
             }
         ]
+    });
+
+    $(document).on('click', '.status-toggle', function() {
+        const id = $(this).data('id');
+        const status = $(this).data('status');
+        // Your AJAX call to toggle the status
     });
 
     // Edit category

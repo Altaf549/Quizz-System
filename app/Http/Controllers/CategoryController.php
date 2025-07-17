@@ -37,9 +37,21 @@ class CategoryController extends Controller
                     return '<span class="text-muted">No Image</span>';
                 })
                 ->addColumn('status', function($row) {
-                    return ucfirst($row->status);
+                    $iconClass = $row->status === 'active'
+                        ? 'fa-toggle-on text-success'
+                        : 'fa-toggle-off text-secondary';
+                
+                    return '
+                        <button 
+                            type="button" 
+                            class="status-toggle" 
+                            data-id="' . $row->id . '" 
+                            data-status="' . $row->status . '" 
+                            style="border: none; background: transparent;">
+                            <i class="fas ' . $iconClass . '" style="font-size: 2rem;"></i>
+                        </button>';
                 })
-                ->rawColumns(['action', 'image'])
+                ->rawColumns(['action', 'image', 'status'])
                 ->make(true);
         }
         
