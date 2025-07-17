@@ -45,8 +45,8 @@ class QuizController extends Controller
                                    ' . $checked . '>
                         </div>';
                 })
-                ->addColumn('category.name', function($row) {
-                    return $row->category ? $row->category->name : 'No category';
+                ->addColumn('category', function($row) {
+                    return $row->category ? $row->category->name : '-';
                 })
                 ->addColumn('time', function($row) {
                     return $row->time . ' minutes';
@@ -58,7 +58,7 @@ class QuizController extends Controller
                 ->make(true);
         }
         
-        $categories = Category::all();
+        $categories = Category::where('status', 'active')->pluck('name', 'id');
         return view('quizzes.index', compact('categories'));
     }
 

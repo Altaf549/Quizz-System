@@ -57,7 +57,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="title" class="form-label fw-semibold fs-6">Title</label>
+                        <label for="title" class="form-label fw-semibold fs-6">Quiz Title</label>
                         <input type="text" class="form-control" id="title" name="title" required placeholder="Enter quiz title">
                     </div>
 
@@ -67,7 +67,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="description" class="form-label fw-semibold fs-6">Description</label>
+                        <label for="description" class="form-label fw-semibold fs-6">Quiz Description</label>
                         <textarea class="form-control" id="description" name="description" rows="4" required placeholder="Enter quiz description"></textarea>
                     </div>
                 </div>
@@ -95,34 +95,35 @@
                 <div class="modal-body p-4">
                     <input type="hidden" id="edit_id" name="id">
                     
-                    <div class="mb-3">
-                        <label for="edit_category_id" class="form-label fw-semibold fs-6">Category</label>
-                        <select name="category_id" id="edit_category_id" class="form-select" required>
-                            <option value="">Select Category</option>
-                            @foreach($categories as $id => $name)
-                                <option value="{{ $id }}">{{ $name }}</option>
-                            @endforeach
-                        </select>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="edit_category_id" class="form-label fw-semibold fs-6">Category</label>
+                            <select name="category_id" id="edit_category_id" class="form-select" required>
+                                <option value="">Select Category</option>
+                                @foreach($categories as $id => $name)
+                                    <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="edit_title" class="form-label fw-semibold fs-6">Quiz Title</label>
+                            <input type="text" class="form-control" id="edit_title" name="title" required placeholder="Enter quiz title">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="edit_time" class="form-label fw-semibold fs-6">Time (minutes)</label>
+                            <input type="number" class="form-control" id="edit_time" name="time" required min="1" placeholder="Enter quiz duration">
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="edit_title" class="form-label fw-semibold fs-6">Title</label>
-                        <input type="text" class="form-control" id="edit_title" name="title" required placeholder="Enter quiz title">
+                    <div class="mb-3 mt-3">
+                        <label for="edit_description" class="form-label fw-semibold fs-6">Quiz Description</label>
+                        <textarea class="form-control" id="edit_description" name="description" rows="3" required placeholder="Enter quiz description"></textarea>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="edit_time" class="form-label fw-semibold fs-6">Time (minutes)</label>
-                        <input type="number" class="form-control" id="edit_time" name="time" required min="1" placeholder="Enter quiz duration">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="edit_description" class="form-label fw-semibold fs-6">Description</label>
-                        <textarea class="form-control" id="edit_description" name="description" rows="4" required placeholder="Enter quiz description"></textarea>
                     </div>
                 </div>
 
                 <div class="modal-footer border-top-0 px-4 pb-4 d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary" style="width: 200px;">Update</button>
+                    <button type="submit" class="btn btn-primary btn-lg" style="width: 200px;">Update Quiz</button>
                 </div>
             </form>
         </div>
@@ -215,30 +216,21 @@ $(document).ready(function() {
                 name: 'title' 
             },
             {
-                data: 'category.name',
-                name: 'category.name',
+                data: 'category',
+                name: 'category',
                 render: function(data) {
-                    return data || 'No category';
+                    return data || '-';
                 }
             },
             {
                 data: 'time',
                 name: 'time',
                 render: function(data) {
-                    return data + ' minutes';
+                    return data;
                 }
             },
-            { 
-                data: 'description', 
-                name: 'description' 
-            },
-            {
-                data: 'status',
-                name: 'status',
-                render: function(data) {
-                    return data === 'active' ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>';
-                }
-            },
+            { data: 'description', name: 'description' },
+            {data: 'status',name: 'status'},
             {
                 data: 'created_at',
                 name: 'created_at',
@@ -315,19 +307,41 @@ $(document).ready(function() {
     // Form submissions
     $('#addQuizForm').on('submit', function(e) {
         e.preventDefault();
-        let formData = $(this).serialize();
+        
+        // Show loading state
+        $(this).find('button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
 
         $.ajax({
             url: $(this).attr('action'),
-            method: 'POST',
-            data: formData,
+            type: 'POST',
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
             success: function(response) {
-                toastr.success(response.message);
-                addQuizModal.hide();
-                table.ajax.reload();
+                if (response.success) {
+                    addQuizModal.hide();
+                    $('#addQuizForm')[0].reset();
+                    $('#quizzesTable').DataTable().ajax.reload();
+                    toastr.success('Quizz created successfully.');
+                } else {
+                    toastr.error('Error Quizz category.');
+                }
             },
-            error: function(xhr) {
-                toastr.error(xhr.responseJSON.message);
+            error: function(xhr, status, error) {
+                var errors = xhr.responseJSON.errors;
+                if (errors) {
+                    var errorMessage = '';
+                    $.each(errors, function(key, value) {
+                        errorMessage += value[0] + '<br>';
+                    });
+                    toastr.error(errorMessage);
+                } else {
+                    toastr.error('An error occurred. Please try again.');
+                }
+            },
+            complete: function() {
+                // Reset button state
+                $('#addQuizForm').find('button[type="submit"]').prop('disabled', false).html('Save Quizz');
             }
         });
     });
@@ -336,41 +350,39 @@ $(document).ready(function() {
         e.preventDefault();
         let formData = $(this).serialize();
         let id = $('#edit_id').val();
-        let url = '{{ route('dashboard.quizzes.update', ['quiz' => ':id']) }}'.replace(':id', id);
 
         $.ajax({
-            url: url,
+            url: '{{ route('dashboard.quizzes.update', ['quiz' => ':id']) }}'.replace(':id', id),
             method: 'PUT',
             data: formData,
             success: function(response) {
-                toastr.success(response.message);
-                editQuizModal.hide();
-                table.ajax.reload();
+                if (response.success) {
+                    $('#editQuizModal').modal('hide');
+                    $('#quizzesTable').DataTable().ajax.reload();
+                    toastr.success(response.message);
+                } else {
+                    toastr.error('Failed to update Quizz');
+                }
             },
             error: function(xhr) {
-                toastr.error(xhr.responseJSON.message);
+                let errors = xhr.responseJSON?.errors;
+                if (errors) {
+                    let errorMessages = Object.values(errors).flat();
+                    toastr.error(errorMessages.join('<br>'));
+                } else {
+                    toastr.error('An error occurred while updating the Quizz');
+                }
             }
         });
     });
 
-    // Delete form submission
-    $('#deleteQuizForm').on('submit', function(e) {
-        e.preventDefault();
-        
-        $.ajax({
-            url: $(this).attr('action'),
-            method: 'DELETE',
-            data: $(this).serialize(),
-            success: function(response) {
-                toastr.success(response.message);
-                deleteQuizModal.hide();
-                table.ajax.reload();
-            },
-            error: function(xhr) {
-                toastr.error(xhr.responseJSON.message);
-            }
-        });
+    // Delete category
+    $(document).on('click', '.delete-category', function() {
+        let id = $(this).data('id');
+        $('#deleteCategoryForm').attr('action', '{{ route('dashboard.categories.destroy', ['category' => ':id']) }}'.replace(':id', id));
+        $('#deleteCategoryModal').modal('show');
     });
+
 });
 </script>
 @endpush
