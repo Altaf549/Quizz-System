@@ -135,69 +135,21 @@
 @push('styles')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
 <style>
-    .modal-content {
-        border-radius: 10px;
+    .dataTables_filter {
+        float: right;
+        margin-bottom: 1rem;
     }
-    
-    .modal-header {
-        background: #4a5568;
-        color: white;
-        border-radius: 10px 10px 0 0;
-    }
-    
-    .modal-body {
-        padding: 20px;
-    }
-    
-    .form-group {
-        margin-bottom: 20px;
-    }
-    
-    .form-label {
-        font-weight: 600;
-        color: #4a5568;
-        margin-bottom: 8px;
-    }
-    
-    .form-control {
-        border-radius: 8px;
-        padding: 12px;
-        border: 1px solid #e2e8f0;
-    }
-    
-    .image-preview-container {
-        border: 2px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 10px;
-        background: #f7fafc;
-    }
-    
-    .btn-close-white {
-        filter: brightness(0) invert(1);
-    }
-    
-    .btn {
-        padding: 12px 24px;
-        border-radius: 8px;
+
+    .dataTables_filter label {
         font-weight: 500;
-        font-size: 14px;
     }
-    
-    .btn-primary {
-        border: none;
-        padding: 12px 32px;
-        transition: all 0.2s ease;
-    }
-    
-    .btn-primary:hover {
-        transform: translateY(-1px);
-    }
-    
-    .btn-secondary {
-        background: #cbd5e0;
-        border: none;
-        padding: 12px 32px;
+
+    .dataTables_filter input {
+        border-radius: 0.375rem; /* rounded corners */
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #ced4da;
+        width: 250px;
+        margin-left: 0.5rem;
     }
 </style>
 @endpush

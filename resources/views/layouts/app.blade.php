@@ -277,6 +277,7 @@
             color: #e53e3e;
         }
     </style>
+    @stack('styles')
 </head>
 <body>
     <div id="app" class="d-flex">
