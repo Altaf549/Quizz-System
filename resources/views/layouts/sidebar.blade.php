@@ -15,7 +15,11 @@
                     <i class="fas fa-folder me-2"></i> Manage Categories
                 </a>
             </li>
-            
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('dashboard.quizzes.*') ? 'active' : '' }}" href="{{ route('dashboard.quizzes.index') }}">
+                    <i class="fas fa-question-circle me-2"></i> Manage Quizzes
+                </a>
+            </li>
         </ul>
     </nav>
 </div>
