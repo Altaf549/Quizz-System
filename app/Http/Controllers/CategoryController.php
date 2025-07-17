@@ -21,11 +21,11 @@ class CategoryController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function($row) {
                     $actionBtn = '<div class="btn-group">
-                        <a href="' . route('dashboard.categories.edit', $row->id) . '" class="btn btn-sm text-yellow-500">
-                            <i class="fas fa-edit"></i>
+                        <a href="' . route('dashboard.categories.edit', $row->id) . '" class="btn btn-sm">
+                            <i class="fas fa-edit fa-lg text-warning"></i>
                         </a>
-                        <button type="button" class="btn btn-sm text-red-500 delete-category" data-id="' . $row->id . '">
-                            <i class="fas fa-trash"></i>
+                        <button type="button" class="btn btn-sm delete-category" data-id="' . $row->id . '">
+                            <i class="fas fa-trash fa-lg text-danger"></i>
                         </button>
                     </div>';
                     return $actionBtn;
