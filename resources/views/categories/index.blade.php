@@ -33,60 +33,62 @@
 </div>
 
 <!-- Add Category Modal -->
-<div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered custom-modal-width">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-semibold fs-4" id="addCategoryModalLabel">Add New Category</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
             <form id="addCategoryForm" method="POST" action="{{ route('dashboard.categories.store') }}" enctype="multipart/form-data">
                 @csrf
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="name" class="form-label">Category Name</label>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-semibold fs-6">Category Name</label>
                         <input type="text" class="form-control" id="name" name="name" required placeholder="Enter category name">
                     </div>
-                    <div class="form-group">
-                        <label for="image" class="form-label">Category Image (Optional)</label>
-                        <div class="image-preview-container">
-                            <img id="imagePreview" class="img-fluid rounded" style="max-width: 150px; max-height: 150px; display: none;">
+
+                    <div class="mb-3">
+                        <label for="image" class="form-label fw-semibold fs-6">Category Image (Optional)</label>
+                        <div class="mb-3 d-flex align-items-center gap-3 flex-wrap">
+                            <img id="imagePreview" class="rounded border border-2" style="max-width: 150px; max-height: 150px; display: none;">
+                            <div class="flex-grow-1">
+                                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                <small class="text-muted d-block mt-2">Supported: jpg, jpeg, png, gif. Max size: 2MB</small>
+                            </div>
                         </div>
-                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
-                        <small class="text-muted">Supported formats: jpeg, png, jpg, gif. Max size: 2MB</small>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary btn-lg" style="width: 200px;">Save Category</button>
-                    </div>
+
+                <div class="modal-footer border-top-0 px-4 pb-4 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary btn-lg" style="width: 200px;">Save Category</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+
 <!-- Edit Category Modal -->
 <div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-info text-white">
-                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title fw-bold fs-4" id="editCategoryModalLabel">Edit Category</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="editCategoryForm" method="POST">
                 @csrf
                 @method('PUT')
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <input type="hidden" id="edit_id" name="id">
-                    <div class="form-group">
-                        <label for="edit_name" class="font-weight-bold">Category Name</label>
+                    <div class="mb-4">
+                        <label for="edit_name" class="form-label fw-bold fs-5">Category Name</label>
                         <input type="text" class="form-control form-control-lg" id="edit_name" name="name" required placeholder="Enter category name">
                     </div>
-                    <div class="form-group">
-                        <label for="edit_status" class="font-weight-bold">Status</label>
+                    <div class="mb-4">
+                        <label for="edit_status" class="form-label fw-bold fs-5">Status</label>
                         <select class="form-control form-control-lg" id="edit_status" name="status">
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
@@ -94,8 +96,10 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btn-lg" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-info btn-lg">Update Category</button>
+                    <div class="w-100 d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary btn-lg px-5">Cancel</button>
+                        <button type="submit" class="btn btn-info btn-lg px-5">Update Category</button>
+                    </div>
                 </div>
             </form>
         </div>
