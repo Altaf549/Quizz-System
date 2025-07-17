@@ -36,7 +36,7 @@
 
 <!-- Add Quiz Modal -->
 <div class="modal fade" id="addQuizModal" tabindex="-1" aria-labelledby="addQuizModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered custom-modal-width">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content shadow-lg">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title fw-semibold fs-4" id="addQuizModalLabel">Add New Quiz</h5>
@@ -46,29 +46,29 @@
             <form id="addQuizForm" method="POST" action="{{ route('dashboard.quizzes.store') }}">
                 @csrf
                 <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label for="category_id" class="form-label fw-semibold fs-6">Category</label>
-                        <select name="category_id" id="category_id" class="form-select" required>
-                            <option value="">Select Category</option>
-                            @foreach($categories as $id => $name)
-                                <option value="{{ $id }}">{{ $name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="title" class="form-label fw-semibold fs-6">Quiz Title</label>
-                        <input type="text" class="form-control" id="title" name="title" required placeholder="Enter quiz title">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="time" class="form-label fw-semibold fs-6">Time (minutes)</label>
-                        <input type="number" class="form-control" id="time" name="time" required min="1" placeholder="Enter quiz duration">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="category_id" class="form-label fw-semibold fs-6">Category</label>
+                            <select name="category_id" id="category_id" class="form-select" required>
+                                <option value="">Select Category</option>
+                                @foreach($categories as $id => $name)
+                                    <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="title" class="form-label fw-semibold fs-6">Quiz Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required placeholder="Enter quiz title">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="time" class="form-label fw-semibold fs-6">Time (minutes)</label>
+                            <input type="number" class="form-control" id="time" name="time" required min="1" placeholder="Enter quiz duration">
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="description" class="form-label fw-semibold fs-6">Quiz Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="4" required placeholder="Enter quiz description"></textarea>
+                        <textarea class="form-control" id="description" name="description" rows="3" required placeholder="Enter quiz description"></textarea>
                     </div>
                 </div>
 
@@ -82,7 +82,7 @@
 
 <!-- Edit Quiz Modal -->
 <div class="modal fade" id="editQuizModal" tabindex="-1" aria-labelledby="editQuizModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered custom-modal-width">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content shadow-lg">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title fw-semibold fs-4" id="editQuizModalLabel">Edit Quiz</h5>
@@ -115,10 +115,9 @@
                         </div>
                     </div>
 
-                    <div class="mb-3 mt-3">
+                    <div class="mb-3">
                         <label for="edit_description" class="form-label fw-semibold fs-6">Quiz Description</label>
                         <textarea class="form-control" id="edit_description" name="description" rows="3" required placeholder="Enter quiz description"></textarea>
-                    </div>
                     </div>
                 </div>
 
