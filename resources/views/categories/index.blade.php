@@ -21,7 +21,6 @@
                             <th>Image</th>
                             <th>Status</th>
                             <th>Created At</th>
-                            <th>View Details</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -305,15 +304,6 @@ $(document).ready(function() {
                 render: function(data) {
                     return moment(data).format('DD MMM YYYY, HH:mm');
                 }
-            },
-            {
-                data: 'id',
-                name: 'id',
-                render: function(data) {
-                    return '<a href="/dashboard/categories/' + data + '" class="btn btn-sm btn-info">View</a>';
-                },
-                orderable: false,
-                searchable: false
             },
             {
                 data: 'action',

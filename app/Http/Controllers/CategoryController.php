@@ -21,14 +21,18 @@ class CategoryController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function($row) {
                     $actionBtn = '<div class="btn-group">
-                        <a href="' . route('dashboard.categories.edit', $row->id) . '" class="btn btn-sm btn-primary">Edit</a>
-                        <button type="button" class="btn btn-sm btn-danger delete-category" data-id="' . $row->id . '">Delete</button>
+                        <a href="' . route('dashboard.categories.edit', $row->id) . '" class="btn btn-sm text-yellow-500">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button type="button" class="btn btn-sm text-red-500 delete-category" data-id="' . $row->id . '">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>';
                     return $actionBtn;
                 })
                 ->addColumn('image', function($row) {
                     if ($row->image) {
-                        return '<img src="' . asset($row->image) . '" alt="Category Image" style="max-height: 50px;">';
+                        return asset($row->image);
                     }
                     return '<span class="text-muted">No Image</span>';
                 })
